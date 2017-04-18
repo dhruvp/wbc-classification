@@ -13,18 +13,14 @@ ENV DATA_DIR=/home/_data
 ENV SRC_DIR=/home/src
 
 # Run commands to make code work
-RUN sudo apt-get update -y
+RUN apt-get update -y
 
 # Requirements
-RUN sudo apt-get install -y git \
+RUN apt-get install -y git \
                             python-sympy \
                             ipython \
                             python-pandas \
-                            cmake \
-                            &&
-        apt-get clean && \
-        apt-get autoremove && \
-        rm -rf /var/lib/apt/lists/* && \
+                            cmake
 
 # Install OpenCV
 RUN apt-get update && apt-get install -y libopencv-dev python-opencv && \
