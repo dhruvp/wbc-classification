@@ -15,29 +15,20 @@ ENV SRC_DIR=/home/src
 # Run commands to make code work
 RUN sudo apt-get update -y
 
-# Numpy / Scipy reqs
-RUN sudo apt-get install ipython -y
-RUN sudo apt-get install ipython-notebook -y
-RUN sudo apt-get install python-pandas -y
-RUN sudo apt-get install python-sympy -y
+# Requirements
+RUN sudo apt-get install -y git \
+                            python-sympy \
+                            ipython \
+                            python-pandas \
+                            cmake \
+                            &&
+        apt-get clean && \
+        apt-get autoremove && \
+        rm -rf /var/lib/apt/lists/* && \
 
-# git clone the repo from OpenCV official repository on GitHub.
-RUN mkdir /opt/opencv-build && cd /opt/opencv-build \
-&& git clone https://github.com/Itseez/opencv && cd opencv \
-&& git checkout master && mkdir build
-
-WORKDIR /opt/opencv-build/opencv/build
-
-ENV JAVA_HOME /usr/lib/jvm/java-1.7.0-openjdk-amd64
-
-# OpenCV repository is kept but all building intermediate files are removed.
-# All other dependencies is using the default settings from CMake file of OpenCV.
-RUN cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/opt .. \
-&& make -j2 && make install && make clean && cd .. && rm -rf build
-
-# Let python can find the newly install OpenCV modules.
-RUN echo '/opt/lib/python2.7/dist-packages/'>/usr/lib/python2.7/dist-packages/cv2.pth
-RUN echo 'ln /dev/null /dev/raw1394' >> ~/.bashrc
+# Install OpenCV
+RUN apt-get update && apt-get install -y libopencv-dev python-opencv && \
+    echo 'ln /dev/null /dev/raw1394' >> ~/.bashrc
 
 RUN mkdir -p /home/src
 
