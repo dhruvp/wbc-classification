@@ -1,2 +1,2 @@
-# model-workflow-keras
-Using tensorflow backend. Can change in dockerfile to use theano backend
+# Example for model-workflow-keras
+Using WBC classification
