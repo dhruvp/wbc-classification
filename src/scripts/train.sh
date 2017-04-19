@@ -1,2 +1,2 @@
 #!/bin/bash
-python mnist_cnn.py 
+python training.py
