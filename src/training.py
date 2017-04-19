@@ -1,6 +1,10 @@
 import os
 import json
 import numpy as np
+import cv2
+import scipy
+import os
+import matplotlib.pyplot as plt
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Conv2D, MaxPooling2D, Lambda
@@ -10,10 +14,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from sklearn.preprocessing import LabelEncoder
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix
-import cv2
-import scipy
-import os
-import matplotlib.pyplot as plt
+
 
 num_classes = 5
 epochs = 20
