@@ -23,7 +23,7 @@ RUN apt-get install -y git \
                             cmake
 
 # Install OpenCV
-RUN apt-get update && apt-get install -y libopencv-dev python-opencv && \
+RUN apt-get update -y && apt-get install -y libopencv-dev python-opencv && \
     echo 'ln /dev/null /dev/raw1394' >> ~/.bashrc
 
 RUN mkdir -p /home/src
