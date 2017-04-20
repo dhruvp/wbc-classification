@@ -9,6 +9,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Conv2D, MaxPooling2D, Lambda
 from keras.layers import Dense
+from keras_checkpoint import KerasCheckpoint
 from keras.utils import np_utils
 from keras.preprocessing.image import ImageDataGenerator
 from sklearn.preprocessing import LabelEncoder
@@ -19,8 +20,8 @@ from sklearn.metrics import accuracy_score, confusion_matrix
 num_classes = 5
 epochs = 20
 
-with open(os.environ['INPUT_DIR'] + '/config.json') as f:
-    config = json.load(f)
+#with open(os.environ['INPUT_DIR'] + '/config.json') as f:
+#    config = json.load(f)
 
 BASE_PATH = os.environ['INPUT_DIR'] + '/'
 batch_size = 32
@@ -93,10 +94,16 @@ y_test = encoder.transform(y_test)
 
 model = get_model()
 
+# Use for acusense tracking
+snapshot_path = os.environ['SNAPSHOTS_DIR']
+checkpoint = KerasCheckpoint(snapshot_path, label='cnn', monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+callbacks_list = [checkpoint]
+
 # fits the model on batches
 history = model.fit(
     X_train,
     y_train,
+    callbacks=callbacks_list,
     validation_split=0.2,
     epochs=epochs,
     shuffle=True,
@@ -112,7 +119,7 @@ def plot_learning_curve(history):
     plt.ylabel('accuracy')
     plt.xlabel('epoch')
     plt.legend(['train', 'test'], loc='upper left')
-    plt.savefig('./accuracy_curve.png')
+    plt.savefig(os.environ['SHARED_OUTPUT_DIR'] + '/accuracy_curve.png')
     plt.clf()
     # summarize history for loss
     plt.plot(history.history['loss'])
@@ -121,7 +128,7 @@ def plot_learning_curve(history):
     plt.ylabel('loss')
     plt.xlabel('epoch')
     plt.legend(['train', 'test'], loc='upper left')
-    plt.savefig('./loss_curve.png')
+    plt.savefig(os.environ['SHARED_OUTPUT_DIR'] + '/loss_curve.png')
 
 plot_learning_curve(history)
 
@@ -130,4 +137,8 @@ y_pred = np.rint(model.predict(X_test))
 stats = {}
 acc_score = accuracy_score(y_test, y_pred)
 stats['accuracy_score'] = acc_score
-print(confusion_matrix(y_test, y_pred))
+conf_matrix = confusion_matrix(y_test, y_pred)
+stats['confusion_matrix'] = str(confusion_matrix)
+
+with open(os.environ['SHARED_OUTPUT_DIR']+'/final_stats.json', 'wb') as f:
+    f.write(json.dumps(stats))
